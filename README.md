@@ -28,7 +28,7 @@ The application will now be running and accessible at `http://localhost:8080`.
 
 You can use any HTTP client to fetch data from these endpoints. Here are examples using curl:
 
-1. Healthcheck:
+1. Do Healthcheck:
    curl http://localhost:8080/healthcheck
    
 2. Get Characters:
