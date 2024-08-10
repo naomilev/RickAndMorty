@@ -21,3 +21,10 @@ spec:
         env:
         - name: RICK_AND_MORTY_API_URL
           value: "https://rickandmortyapi.com/api"
+        resources:
+          requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
