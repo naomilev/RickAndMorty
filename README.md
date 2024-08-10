@@ -153,8 +153,8 @@ If you encounter issues accessing the API:
     `kubectl describe ingress rick-and-morty-api-ingress`
 
 5. Check the logs of the API pods:
-    `kubectl logs `<pod-name>``
-   Replace `<pod-name>` with the actual name of your API pod.
+    `kubectl logs pod-name`
+   Replace pod-name with the actual name of your API pod.
    
    If problems persist, please check the Minikube and Kubernetes documentation for your specific environment.
 
