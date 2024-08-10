@@ -52,7 +52,7 @@ This README provides instructions for deploying the Rick and Morty API to Kubern
 
 - Minikube
 - kubectl
-- Docker (for building and pushing images)
+- Docker
 
 ## Deployment Instructions
 
