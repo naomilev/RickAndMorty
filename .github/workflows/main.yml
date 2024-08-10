@@ -1,4 +1,3 @@
-```yaml
 name: Rick and Morty API CI/CD
 
 on:
@@ -64,4 +63,3 @@ jobs:
       run: |
         curl http://localhost:8080/healthcheck
         curl http://localhost:8080/characters
-```
