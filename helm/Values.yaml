@@ -1,1 +1,21 @@
+replicaCount: 2
 
+image:
+  repository: rick-and-morty-api
+  tag: latest
+  pullPolicy: Never
+
+service:
+  port: 80
+
+ingress:
+  enabled: true
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+  hosts:
+    - paths:
+        - path: /
+          pathType: ImplementationSpecific
+
+env:
+  RICK_AND_MORTY_API_URL: "https://rickandmortyapi.com/api"
