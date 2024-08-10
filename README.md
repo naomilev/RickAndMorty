@@ -66,9 +66,9 @@ Choose the instructions based on your operating system:
       minikube start
    
 2. Apply the Kubernetes manifests:
-    kubectl apply -f Deployment.yaml
-    kubectl apply -f Service.yaml
-    kubectl apply -f Ingress.yaml
+    kubectl apply -f kubernetes/Deployment.yaml
+    kubectl apply -f kubernetes/Service.yaml
+    kubectl apply -f kubernetes/Ingress.yaml
    
 3. Enable the Ingress addon in Minikube:
     minikube addons enable ingress
@@ -88,9 +88,9 @@ Choose the instructions based on your operating system:
 ### Cleaning Up
 
 To remove the deployed resources:
-   kubectl delete -f Ingress.yaml
-   kubectl delete -f Service.yaml
-   kubectl delete -f Deployment.yaml
+   kubectl delete -f kubernetes/Ingress.yaml
+   kubectl delete -f kubernetes/Service.yaml
+   kubectl delete -f kubernetes/Deployment.yaml
 
 ## Linux/Windows Instructions
 
@@ -105,17 +105,17 @@ To remove the deployed resources:
     minikube start
 
 2. Apply the Kubernetes manifests:
-    kubectl apply -f Deployment.yaml
-    kubectl apply -f Service.yaml
-    kubectl apply -f Ingress.yaml
+    kubectl apply -f kubernetes/Deployment.yaml
+    kubectl apply -f kubernetes/Service.yaml
+    kubectl apply -f kubernetes/Ingress.yaml
 
-3. Enable the Ingress addon in Minikube:
+4. Enable the Ingress addon in Minikube:
     minikube addons enable ingress
 
-4. Get the Minikube IP:
+5. Get the Minikube IP:
     minikube ip
 
-5. Access the API endpoints:
+6. Access the API endpoints:
     - Characters: `http://minikube-ip/characters`
     - Health Check: `http://minikube-ip/healthcheck`
 
@@ -127,9 +127,9 @@ To remove the deployed resources:
 ### Cleaning Up
 
 To remove the deployed resources:
-      kubectl delete -f Ingress.yaml
-      kubectl delete -f Service.yaml
-      kubectl delete -f Deployment.yaml
+      kubectl delete -f kubernetes/Ingress.yaml
+      kubectl delete -f kubernetes/Service.yaml
+      kubectl delete -f kubernetes/Deployment.yaml
 
 ## Troubleshooting
 
