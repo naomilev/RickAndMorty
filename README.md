@@ -2,6 +2,13 @@
 
 This project provides a REST API to fetch information about Rick and Morty characters who are human, alive, and originate from Earth.
 
+## Project Structure
+
+- `kubernetes/`: Contains Kubernetes manifest files
+- `src/`: Contains the application source code (`app.py`)
+- `Dockerfile`: Defines the container image for the application
+- `requirements.txt`: Lists the Python dependencies
+
 ## Building and Running the Docker Image
 
 1. Build the Docker image:
