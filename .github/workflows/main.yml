@@ -32,7 +32,7 @@ jobs:
         sudo install minikube-linux-amd64 /usr/bin/minikube
     
     - name: Start minikube
-      run: minikube start --driver=docker
+      run: minikube start --driver=docker --cpus 2 --memory 4096
     
     - name: Install Helm
       uses: azure/setup-helm@v3
@@ -55,6 +55,10 @@ jobs:
         echo "Application logs:"
         kubectl logs -l app=rick-and-morty-api --tail=100
         
+    - name: Debug - Check DNS and network
+      run: |
+        kubectl run -it --rm --restart=Never --image=busybox network-test -- /bin/sh -c "nslookup rickandmortyapi.com && wget -O- -q https://rickandmortyapi.com/api/character"
+        
     - name: Port forward and run tests
       run: |
         kubectl port-forward service/rick-and-morty-api-service 8080:80 &
@@ -62,6 +66,11 @@ jobs:
         curl -v http://localhost:8080/healthcheck
         curl -v http://localhost:8080/characters
         kill %1
+
+    - name: View post-test logs
+      run: |
+        echo "Post-test application logs:"
+        kubectl logs -l app=rick-and-morty-api --tail=100
 
     - name: Clean up
       if: always()
