@@ -65,4 +65,4 @@ jobs:
 
     - name: Clean up
       if: always()
-      run: minikube delet
+      run: minikube delete
