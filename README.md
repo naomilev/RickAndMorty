@@ -65,15 +65,15 @@ Choose the instructions based on your operating system:
       minikube start
    
 2. Apply the Kubernetes manifests:
-      kubectl apply -f Deployment.yaml
-      kubectl apply -f Service.yaml
-      kubectl apply -f Ingress.yaml
+    kubectl apply -f Deployment.yaml
+    kubectl apply -f Service.yaml
+    kubectl apply -f Ingress.yaml
    
 3. Enable the Ingress addon in Minikube:
-      minikube addons enable ingress
+    minikube addons enable ingress
    
 4. Get the URL to access your service:
-      minikube service ingress-nginx-controller -n ingress-nginx --url
+    minikube service ingress-nginx-controller -n ingress-nginx --url
    
 5. Access the API endpoints:
    - Characters: `<URL from step 4>/characters`
@@ -100,26 +100,26 @@ To remove the deployed resources:
 ### Deployment Steps
 
 1. Start Minikube:
-      minikube start
+    minikube start
 
 2. Apply the Kubernetes manifests:
-      kubectl apply -f Deployment.yaml
-      kubectl apply -f Service.yaml
-      kubectl apply -f Ingress.yaml
+    kubectl apply -f Deployment.yaml
+    kubectl apply -f Service.yaml
+    kubectl apply -f Ingress.yaml
 
 3. Enable the Ingress addon in Minikube:
-      minikube addons enable ingress
+    minikube addons enable ingress
 
 4. Get the Minikube IP:
-      minikube ip
+    minikube ip
 
 5. Access the API endpoints:
-   - Characters: `http://<minikube-ip>/characters`
-   - Health Check: `http://<minikube-ip>/healthcheck`
+    - Characters: `http://<minikube-ip>/characters`
+    - Health Check: `http://<minikube-ip>/healthcheck`
 
    For example:
-      curl http://<minikube-ip>/characters
-      curl http://<minikube-ip>/healthcheck
+    curl http://<minikube-ip>/characters
+    curl http://<minikube-ip>/healthcheck
    Replace `<minikube-ip>` with the IP address obtained in step 4.
 
 ### Cleaning Up
@@ -134,17 +134,17 @@ To remove the deployed resources:
 If you encounter issues accessing the API:
 
 1. Ensure all pods are running:
-      kubectl get pods
+    kubectl get pods
 
 2. Check the Ingress controller status:
-      kubectl get pods -n ingress-nginx
+    kubectl get pods -n ingress-nginx
 
-3. Verify the Ingress resource:
-      kubectl get ingress
-      kubectl describe ingress rick-and-morty-api-ingress
+4. Verify the Ingress resource:
+    kubectl get ingress
+    kubectl describe ingress rick-and-morty-api-ingress
 
-4. Check the logs of the API pods:
-      kubectl logs <pod-name>
+5. Check the logs of the API pods:
+    kubectl logs <pod-name>
    Replace `<pod-name>` with the actual name of your API pod.
    
    If problems persist, please check the Minikube and Kubernetes documentation for your specific environment.
