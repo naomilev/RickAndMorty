@@ -7,20 +7,7 @@ on:
     branches: [ main ]
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Build Docker image
-      run: docker build -t rick-and-morty-api .
-    
-    - name: Run Docker container
-      run: docker run -d -p 8080:8080 rick-and-morty-api
-      
-  deploy:
-    needs: build
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
@@ -43,30 +30,18 @@ jobs:
       run: |
         eval $(minikube docker-env)
         docker build -t rick-and-morty-api .
-        helm install rick-and-morty-api ./helm --debug
+        helm install rick-and-morty-api ./helm
         
     - name: Wait for deployment
-      run: |
-        echo "Waiting for deployment to be ready..."
-        kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
+      run: kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
         
-    - name: View application logs
-      run: |
-        echo "Application logs:"
-        kubectl logs -l app=rick-and-morty-api --tail=100
-        
-    - name: Port forward and run tests
+    - name: Run tests
       run: |
         kubectl port-forward service/rick-and-morty-api-service 8080:80 &
         sleep 10
-        curl -v http://localhost:8080/healthcheck
-        curl -v http://localhost:8080/characters
+        curl -s http://localhost:8080/healthcheck
+        curl -s http://localhost:8080/characters
         kill %1
-
-    - name: View post-test logs
-      run: |
-        echo "Post-test application logs:"
-        kubectl logs -l app=rick-and-morty-api --tail=100
 
     - name: Clean up
       if: always()
