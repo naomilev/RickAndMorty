@@ -45,34 +45,24 @@ jobs:
         docker build -t rick-and-morty-api .
         helm install rick-and-morty-api ./helm --debug
         
-    - name: Debug - Check Kubernetes resources
-      run: |
-        echo "All resources:"
-        kubectl get all
-        echo "Deployments:"
-        kubectl get deployments
-        echo "Services:"
-        kubectl get services
-        echo "Pods:"
-        kubectl get pods
-        
     - name: Wait for deployment
       run: |
         echo "Waiting for deployment to be ready..."
         kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
         
+    - name: View application logs
+      run: |
+        echo "Application logs:"
+        kubectl logs -l app=rick-and-morty-api --tail=100
+        
     - name: Port forward and run tests
       run: |
-        # Start port forwarding in the background
         kubectl port-forward service/rick-and-morty-api-service 8080:80 &
-        # Wait for port-forward to be ready
         sleep 10
-        # Run tests
-        curl -v http://localhost:8080/healthcheck || echo "Failed to reach /healthcheck endpoint"
-        curl -v http://localhost:8080/characters || echo "Failed to reach /characters endpoint"
-        # Kill the port-forwarding process
+        curl -v http://localhost:8080/healthcheck
+        curl -v http://localhost:8080/characters
         kill %1
 
     - name: Clean up
       if: always()
-      run: minikube delete
+      run: minikube delet
