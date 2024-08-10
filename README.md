@@ -4,8 +4,8 @@ This project provides a REST API to fetch information about Rick and Morty chara
 
 ## Project Structure
 
-- `kubernetes/`: Contains Kubernetes manifest files
 - `helm/`: Contains the Helm chart for the application
+- `helm/templates/`: Contains Kubernetes manifest files
 - `src/`: Contains the application source code (`app.py`)
 - `Dockerfile`: Defines the container image for the application
 - `requirements.txt`: Lists the Python dependencies
