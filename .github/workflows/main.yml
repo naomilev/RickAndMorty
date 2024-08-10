@@ -7,34 +7,40 @@ on:
     branches: [ main ]
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v4
-    
+    - name: Build Docker image
+      run: docker build -t rick-and-morty-api .
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
     - name: Install minikube
       run: |
         curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
         sudo install minikube-linux-amd64 /usr/bin/minikube
-    
     - name: Start minikube
       run: minikube start --driver=docker --cpus 2 --memory 4096
-    
     - name: Install Helm
       uses: azure/setup-helm@v3
       with:
         version: 'v3.9.0'
-    
     - name: Deploy to minikube
       run: |
         eval $(minikube docker-env)
         docker build -t rick-and-morty-api .
         helm install rick-and-morty-api ./helm
-        
     - name: Wait for deployment
       run: kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
-        
+
+  test:
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
     - name: Run tests
       run: |
         kubectl port-forward service/rick-and-morty-api-service 8080:80 &
@@ -42,7 +48,6 @@ jobs:
         curl -s http://localhost:8080/healthcheck
         curl -s http://localhost:8080/characters
         kill %1
-
     - name: Clean up
       if: always()
       run: minikube delete
