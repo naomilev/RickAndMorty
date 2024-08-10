@@ -6,6 +6,7 @@ image:
   pullPolicy: Never
 
 service:
+  type: ClusterIP
   port: 80
 
 ingress:
