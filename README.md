@@ -58,6 +58,7 @@ Choose the instructions based on your operating system:
 ### Prerequisites
 - Minikube
 - kubectl
+- Docker
 
 ### Deployment Steps
 
@@ -96,6 +97,7 @@ To remove the deployed resources:
 ### Prerequisites
 - Minikube
 - kubectl
+- Docker
 
 ### Deployment Steps
 
