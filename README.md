@@ -114,3 +114,50 @@ If you encounter issues deploying or accessing the API:
    Replace `<pod-name>` with the actual name of your API pod.
 
 If problems persist, please consult the Helm and Kubernetes documentation for further troubleshooting steps.
+
+## CI/CD Workflow
+
+This project uses GitHub Actions for Continuous Integration and Continuous Deployment (CI/CD). The workflow is defined in `.github/workflows/main.yml` and consists of two main jobs: `build` and `deploy-and-test`.
+
+### Workflow Overview
+
+The workflow is triggered on two events:
+- Push to the `main` branch
+- Pull request to the `main` branch
+
+### Jobs and Steps
+
+1. **Build Job**
+   - Checks out the code
+   - Builds the Docker image using the Dockerfile in the root of the project
+
+2. **Deploy and Test Job**
+   - Checks out the code
+   - Installs and starts Minikube
+   - Installs Helm
+   - Builds and deploys the application using Helm
+   - Waits for the deployment to be available
+   - Runs tests against the deployed application
+   - Cleans up by deleting the Minikube cluster
+
+### Key Components
+
+- **Minikube**: Creates a local Kubernetes cluster for testing
+- **Docker**: Containerizes the application
+- **Helm**: Deploys the application to Kubernetes
+- **kubectl**: Interacts with the Kubernetes cluster
+
+### Testing
+
+The workflow includes basic tests that:
+- Check the `/healthcheck` endpoint
+- Verify the `/characters` endpoint returns data
+
+### Cleanup
+
+After tests are completed, the Minikube cluster is deleted to free up resources.
+
+### Viewing Workflow Results
+
+You can view the results of this workflow in the "Actions" tab of the GitHub repository. Each workflow run will show the status of the jobs and steps, allowing you to debug any issues that may occur during the CI/CD process.
+
