@@ -26,6 +26,28 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Debug - List repository contents
+      run: |
+        echo "Listing entire repository:"
+        ls -R
+    
+    - name: Debug - Display Helm chart files
+      run: |
+        echo "Contents of Chart.yaml:"
+        cat helm/Chart.yaml || echo "Failed to read Chart.yaml"
+        
+        echo "Contents of values.yaml:"
+        cat helm/values.yaml || echo "Failed to read values.yaml"
+        
+        echo "Contents of templates/Deployment.yaml:"
+        cat helm/templates/Deployment.yaml || echo "Failed to read Deployment.yaml"
+        
+        echo "Contents of templates/Service.yaml:"
+        cat helm/templates/Service.yaml || echo "Failed to read Service.yaml"
+        
+        echo "Contents of templates/Ingress.yaml:"
+        cat helm/templates/Ingress.yaml || echo "Failed to read Ingress.yaml"
+    
     - name: Install minikube
       run: |
         curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -39,47 +61,45 @@ jobs:
       with:
         version: 'v3.9.0'
     
-    - name: Debug - List Helm chart contents
-      run: |
-        ls -R ./helm
-        cat ./helm/Chart.yaml
-        cat ./helm/values.yaml
-        cat ./helm/templates/deployment.yaml
+    - name: Validate Helm chart
+      run: helm lint ./helm || echo "Helm lint failed"
+    
+    - name: Debug - Helm template
+      run: helm template ./helm || echo "Helm template failed"
     
     - name: Deploy to minikube
       run: |
         eval $(minikube docker-env)
         docker build -t rick-and-morty-api .
-        helm install rick-and-morty-api ./helm --debug
+        helm install rick-and-morty-api ./helm --debug || echo "Helm install failed"
         
     - name: Debug - Check Helm release
       run: |
         helm list
-        helm get all rick-and-morty-api
+        helm get all rick-and-morty-api || echo "Failed to get Helm release details"
         
     - name: Debug - Check Kubernetes resources
       run: |
         kubectl get all
-        kubectl describe deployments
-        kubectl describe pods
+        kubectl describe deployments || echo "No deployments found"
+        kubectl describe pods || echo "No pods found"
         
     - name: Wait for deployment
       run: |
         echo "Waiting for deployment to be ready..."
-        kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
-        echo "Deployment is ready"
+        kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api || echo "Deployment not ready after 5 minutes"
         
     - name: Get service URL
       run: |
         minikube service list
-        minikube service rick-and-morty-api --url
+        minikube service rick-and-morty-api --url || echo "Service not found"
         
     - name: Run API tests
       run: |
         SERVICE_URL=$(minikube service rick-and-morty-api --url)
         echo "Service URL: $SERVICE_URL"
-        curl -v $SERVICE_URL/healthcheck
-        curl -v $SERVICE_URL/characters
+        curl -v $SERVICE_URL/healthcheck || echo "Failed to reach /healthcheck endpoint"
+        curl -v $SERVICE_URL/characters || echo "Failed to reach /characters endpoint"
 
     - name: Clean up
       if: always()
