@@ -12,10 +12,10 @@ This project provides a REST API to fetch information about Rick and Morty chara
 ## Building and Running the Docker Image
 
 1. Build the Docker image:
-      docker build -t rick-and-morty-api
+      `docker build -t rick-and-morty-api`
 
 2. Run the Docker container:
-      docker run -p 8080:8080 rick-and-morty-api
+      `docker run -p 8080:8080 rick-and-morty-api`
 
 The application will now be running and accessible at `http://localhost:8080`.
 
@@ -36,10 +36,10 @@ The application will now be running and accessible at `http://localhost:8080`.
 You can use any HTTP client to fetch data from these endpoints. Here are examples using curl:
 
 1. Do Healthcheck:
-      curl http://localhost:8080/healthcheck
+      `curl http://localhost:8080/healthcheck`
    
 2. Get Characters:
-      curl http://localhost:8080/characters
+      `curl http://localhost:8080/characters`
 
 Note: Make sure the Docker container is running before trying to access these endpoints.
 
@@ -70,34 +70,34 @@ Choose the instructions based on your operating system:
 ### Deployment Steps
 
 1. Start Minikube:
-      minikube start
+      `minikube start`
    
 2. Apply the Kubernetes manifests:
-    kubectl apply -f kubernetes/Deployment.yaml
-    kubectl apply -f kubernetes/Service.yaml
-    kubectl apply -f kubernetes/Ingress.yaml
+    `kubectl apply -f kubernetes/Deployment.yaml`
+    `kubectl apply -f kubernetes/Service.yaml`
+    `kubectl apply -f kubernetes/Ingress.yaml`
    
 3. Enable the Ingress addon in Minikube:
-    minikube addons enable ingress
+    `minikube addons enable ingress`
    
 4. Get the URL to access your service:
-    minikube service ingress-nginx-controller -n ingress-nginx --url
+    `minikube service ingress-nginx-controller -n ingress-nginx --url`
    
 5. Access the API endpoints:
    - Characters: `<URL from step 4>/characters`
    - Health Check: `<URL from step 4>/healthcheck`
 
    For example:
-      curl http://127.0.0.1:port/characters
-      curl http://127.0.0.1:port/healthcheck
+      `curl http://127.0.0.1:port/characters`
+      `curl http://127.0.0.1:port/healthcheck`
    Replace `port` with the port obtained in step 4.
 
 ### Cleaning Up
 
 To remove the deployed resources:
-   kubectl delete -f kubernetes/Ingress.yaml
-   kubectl delete -f kubernetes/Service.yaml
-   kubectl delete -f kubernetes/Deployment.yaml
+   `kubectl delete -f kubernetes/Ingress.yaml`
+   `kubectl delete -f kubernetes/Service.yaml`
+   `kubectl delete -f kubernetes/Deployment.yaml`
 
 ## Linux/Windows Instructions
 
