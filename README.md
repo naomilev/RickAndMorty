@@ -81,7 +81,7 @@ Choose the instructions based on your operating system:
    - Health Check: `<URL from step 4>/healthcheck`
 
    For example:
-      curl 'http://127.0.0.1:port/characters'
+      curl http://127.0.0.1:port/characters
       curl http://127.0.0.1:port/healthcheck
    Replace `port` with the port obtained in step 4.
 
