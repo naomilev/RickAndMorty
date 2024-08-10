@@ -5,6 +5,7 @@ This project provides a REST API to fetch information about Rick and Morty chara
 ## Project Structure
 
 - `kubernetes/`: Contains Kubernetes manifest files
+- `helm/`: Contains the Helm chart for the application
 - `src/`: Contains the application source code (`app.py`)
 - `Dockerfile`: Defines the container image for the application
 - `requirements.txt`: Lists the Python dependencies
@@ -43,150 +44,73 @@ You can use any HTTP client to fetch data from these endpoints. Here are example
 
 Note: Make sure the Docker container is running before trying to access these endpoints.
 
-# Rick and Morty API Kubernetes Deployment
+# Rick and Morty API Helm Deployment
 
-This README provides instructions for deploying the Rick and Morty API to Kubernetes using Minikube.
+This section provides instructions for deploying the Rick and Morty API to Kubernetes using Helm.
 
 ## Prerequisites
 
-- Minikube
-- kubectl
-- Docker (for building and pushing images)
+- Kubernetes cluster (e.g., Minikube, GKE, EKS, etc.)
+- Helm 3.x
 
-## Deployment Instructions
+## Deployment Steps
 
-Choose the instructions based on your operating system:
+1. Navigate to the `helm` directory:
+      `cd helm`
 
-- [MacOS Instructions](#macos-instructions)
-- [Linux/Windows Instructions](#linuxwindows-instructions)
+2. Install the Helm chart:
+      `helm install rick-and-morty-api ./rick-and-morty-api`
 
-## MacOS Instructions
+   This command deploys the Rick and Morty API Helm chart to your Kubernetes cluster.
 
-### Prerequisites
-- Minikube
-- kubectl
-- Docker
+3. Check the installation status:
+      `helm list`
 
-### Deployment Steps
+   Look for the `rick-and-morty-api` release in the output.
 
-1. Start Minikube:
-      `minikube start`
-   
-2. Apply the Kubernetes manifests:
-    `kubectl apply -f kubernetes/Deployment.yaml`
-    `kubectl apply -f kubernetes/Service.yaml`
-    `kubectl apply -f kubernetes/Ingress.yaml`
-   
-3. Enable the Ingress addon in Minikube:
-    `minikube addons enable ingress`
-   
-4. Get the URL to access your service:
-    `minikube service ingress-nginx-controller -n ingress-nginx --url`
-   
+4. Get the application URL:
+   - If using Minikube:
+         `minikube service rick-and-morty-api --url`
+
+   - If using a cloud provider or external cluster:
+     Get the external IP of the service:
+         `kubectl get services`
+
+     Look for the `rick-and-morty-api` service and note its external IP.
+
 5. Access the API endpoints:
-   - Characters: `<URL from step 4>/characters`
-   - Health Check: `<URL from step 4>/healthcheck`
+   - Characters: `<URL or IP>/api/characters`
+   - Health Check: `<URL or IP>/api/healthcheck`
 
-   For example:
-      `curl http://127.0.0.1:port/characters`
-      `curl http://127.0.0.1:port/healthcheck`
-   Replace `port` with the port obtained in step 4.
+   Replace `<URL or IP>` with the URL or IP obtained in step 4.
 
-### Cleaning Up
+### Customizing the Deployment
 
-To remove the deployed resources:
-   `kubectl delete -f kubernetes/Ingress.yaml`
-   `kubectl delete -f kubernetes/Service.yaml`
-   `kubectl delete -f kubernetes/Deployment.yaml`
+You can customize the deployment by modifying the values in the `helm/rick-and-morty-api/values.yaml` file. For example, you can change the number of replicas, update the image tag, or modify the resource limits.
 
-## Linux/Windows Instructions
+After making changes, upgrade the release:
+   `helm upgrade rick-and-morty-api ./rick-and-morty-api`
 
-### Prerequisites
-- Minikube
-- kubectl
-- Docker
+### Uninstalling the Chart
 
-### Deployment Steps
+To uninstall the Helm chart:
+   `helm uninstall rick-and-morty-api`
 
-1. Start Minikube:
-    `minikube start`
-
-2. Apply the Kubernetes manifests:
-    `kubectl apply -f kubernetes/Deployment.yaml`
-    `kubectl apply -f kubernetes/Service.yaml`
-    `kubectl apply -f kubernetes/Ingress.yaml`
-
-4. Enable the Ingress addon in Minikube:
-    `minikube addons enable ingress`
-
-5. Get the Minikube IP:
-    `minikube ip`
-
-6. Access the API endpoints:
-    - Characters: `http://minikube-ip/characters`
-    - Health Check: `http://minikube-ip/healthcheck`
-
-   For example:
-    `curl http://minikube-ip/characters`
-    `curl http://minikube-ip/healthcheck`
-   Replace `minikube-ip` with the IP address obtained in step 4.
-
-### Cleaning Up
-
-To remove the deployed resources:
-      `kubectl delete -f kubernetes/Ingress.yaml`
-      `kubectl delete -f kubernetes/Service.yaml`
-      `kubectl delete -f kubernetes/Deployment.yaml`
+This command removes the Rick and Morty API deployment from your Kubernetes cluster.
 
 ## Troubleshooting
 
-If you encounter issues accessing the API:
+If you encounter issues deploying or accessing the API:
 
-1. Ensure all pods are running:
-    `kubectl get pods`
+1. Check the status of the Helm release:
+      `helm status rick-and-morty-api`
 
-2. Check the Ingress controller status:
-    `kubectl get pods -n ingress-nginx`
+2. Ensure all pods are running:
+      `kubectl get pods`
 
-4. Verify the Ingress resource:
-    `kubectl get ingress`
-    `kubectl describe ingress rick-and-morty-api-ingress`
+3. Check the logs of the API pods:
+      `kubectl logs <pod-name>`
 
-5. Check the logs of the API pods:
-    `kubectl logs pod-name`
-   Replace pod-name with the actual name of your API pod.
-   
-   If problems persist, please check the Minikube and Kubernetes documentation for your specific environment.
+   Replace `<pod-name>` with the actual name of your API pod.
 
-## Note on Cross-Platform Compatibility
-
-These instructions have been primarily tested on macOS. While they should work on Linux and Windows, there might be slight variations depending on your specific setup. If you encounter any issues on Linux or Windows, please:
-
-1. Ensure Minikube is correctly installed for your OS.
-2. Check that your Minikube driver is compatible with your system.
-3. For Windows users, you may need to use Windows Subsystem for Linux (WSL) for the best compatibility.
-
-If you successfully run this on Linux or Windows, please consider contributing your experience back to this project to help other users.
-
-For the most up-to-date information on platform-specific configurations, please refer to the official Minikube documentation:
-[Minikube Start Guide](https://minikube.sigs.k8s.io/docs/start/)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+If problems persist, please consult the Helm and Kubernetes documentation for further troubleshooting steps.
