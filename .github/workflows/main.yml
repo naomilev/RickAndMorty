@@ -26,28 +26,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Debug - List repository contents
-      run: |
-        echo "Listing entire repository:"
-        ls -R
-    
-    - name: Debug - Display Helm chart files
-      run: |
-        echo "Contents of Chart.yaml:"
-        cat helm/Chart.yaml || echo "Failed to read Chart.yaml"
-        
-        echo "Contents of values.yaml:"
-        cat helm/values.yaml || echo "Failed to read values.yaml"
-        
-        echo "Contents of templates/Deployment.yaml:"
-        cat helm/templates/Deployment.yaml || echo "Failed to read Deployment.yaml"
-        
-        echo "Contents of templates/Service.yaml:"
-        cat helm/templates/Service.yaml || echo "Failed to read Service.yaml"
-        
-        echo "Contents of templates/Ingress.yaml:"
-        cat helm/templates/Ingress.yaml || echo "Failed to read Ingress.yaml"
-    
     - name: Install minikube
       run: |
         curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
@@ -61,42 +39,62 @@ jobs:
       with:
         version: 'v3.9.0'
     
+    - name: Debug - Display Helm chart files
+      run: |
+        echo "Contents of Chart.yaml:"
+        cat helm/Chart.yaml
+        echo "Contents of values.yaml:"
+        cat helm/values.yaml
+        echo "Contents of templates/Deployment.yaml:"
+        cat helm/templates/Deployment.yaml
+        echo "Contents of templates/Service.yaml:"
+        cat helm/templates/Service.yaml
+        echo "Contents of templates/Ingress.yaml:"
+        cat helm/templates/Ingress.yaml
+    
     - name: Validate Helm chart
-      run: helm lint ./helm || echo "Helm lint failed"
+      run: helm lint ./helm
     
     - name: Debug - Helm template
-      run: helm template ./helm || echo "Helm template failed"
+      run: helm template ./helm
     
     - name: Deploy to minikube
       run: |
         eval $(minikube docker-env)
         docker build -t rick-and-morty-api .
-        helm install rick-and-morty-api ./helm --debug || echo "Helm install failed"
+        helm install rick-and-morty-api ./helm --debug
         
     - name: Debug - Check Helm release
       run: |
         helm list
-        helm get all rick-and-morty-api || echo "Failed to get Helm release details"
+        helm get all rick-and-morty-api
         
     - name: Debug - Check Kubernetes resources
       run: |
+        echo "All resources:"
         kubectl get all
-        kubectl describe deployments || echo "No deployments found"
-        kubectl describe pods || echo "No pods found"
+        echo "Deployments:"
+        kubectl get deployments
+        echo "Services:"
+        kubectl get services
+        echo "Pods:"
+        kubectl get pods
         
     - name: Wait for deployment
       run: |
         echo "Waiting for deployment to be ready..."
-        kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api || echo "Deployment not ready after 5 minutes"
+        kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
         
     - name: Get service URL
       run: |
+        echo "All services:"
         minikube service list
-        minikube service rick-and-morty-api --url || echo "Service not found"
-        
+        echo "Attempting to get rick-and-morty-api-service URL:"
+        minikube service rick-and-morty-api-service --url
+
     - name: Run API tests
       run: |
-        SERVICE_URL=$(minikube service rick-and-morty-api --url)
+        SERVICE_URL=$(minikube service rick-and-morty-api-service --url)
         echo "Service URL: $SERVICE_URL"
         curl -v $SERVICE_URL/healthcheck || echo "Failed to reach /healthcheck endpoint"
         curl -v $SERVICE_URL/characters || echo "Failed to reach /characters endpoint"
