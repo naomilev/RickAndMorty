@@ -1,45 +1,52 @@
+---
 name: Rick and Morty API CI/CD
-
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-
+    branches:
+      - main
 jobs:
-
   build:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Build Docker image
-      run: docker build -t rick-and-morty-api .
-    
-    - name: Run Docker container
-      run: docker run -d -p 8080:8080 rick-and-morty-api
-      
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t rick-and-morty-api .
+      - name: Run Docker container
+        run: docker run -d -p 8080:8080 rick-and-morty-api
   deploy:
     needs: build
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Create k8s Kind Cluster
-      uses: helm/kind-action@v1.0.0
-      
-    - name: Deploy to cluster
-      run: |
-        helm install rick-and-morty-api ./helm
-        
-    - name: Get service URL
-      run: |
-        kubectl get services
-        kubectl port-forward service/rick-and-morty-api-service 8080:80 &
-        
-    - name: Run API tests
-      run: |
-        curl http://localhost:8080/healthcheck
-        curl http://localhost:8080/characters
+      - uses: actions/checkout@v4
+      - name: Install minikube
+        run: >
+          curl -LO
+          https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+      - name: Start minikube
+        run: minikube start --driver=docker
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.9.0
+      - name: Deploy to minikube
+        run: |
+          eval $(minikube docker-env)
+          docker build -t rick-and-morty-api .
+          helm install rick-and-morty-api ./helm
+      - name: Get service URL
+        run: |
+          minikube service list
+          kubectl port-forward service/rick-and-morty-api-service 8080:80 &
+      - name: Run API tests
+        run: |
+          sleep 10  # Give some time for the service to be ready
+          curl http://localhost:8080/healthcheck
+          curl http://localhost:8080/characters
+      - name: Clean up
+        if: always()
+        run: minikube delete
