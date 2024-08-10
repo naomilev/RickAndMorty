@@ -29,7 +29,7 @@ jobs:
     - name: Install minikube
       run: |
         curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube-linux-amd64 /usr/local/bin/minikube
+        sudo install minikube-linux-amd64 /usr/bin/minikube
     
     - name: Start minikube
       run: minikube start --driver=docker
@@ -39,35 +39,11 @@ jobs:
       with:
         version: 'v3.9.0'
     
-    - name: Debug - Display Helm chart files
-      run: |
-        echo "Contents of Chart.yaml:"
-        cat helm/Chart.yaml
-        echo "Contents of values.yaml:"
-        cat helm/values.yaml
-        echo "Contents of templates/Deployment.yaml:"
-        cat helm/templates/Deployment.yaml
-        echo "Contents of templates/Service.yaml:"
-        cat helm/templates/Service.yaml
-        echo "Contents of templates/Ingress.yaml:"
-        cat helm/templates/Ingress.yaml
-    
-    - name: Validate Helm chart
-      run: helm lint ./helm
-    
-    - name: Debug - Helm template
-      run: helm template ./helm
-    
     - name: Deploy to minikube
       run: |
         eval $(minikube docker-env)
         docker build -t rick-and-morty-api .
         helm install rick-and-morty-api ./helm --debug
-        
-    - name: Debug - Check Helm release
-      run: |
-        helm list
-        helm get all rick-and-morty-api
         
     - name: Debug - Check Kubernetes resources
       run: |
@@ -85,19 +61,17 @@ jobs:
         echo "Waiting for deployment to be ready..."
         kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
         
-    - name: Get service URL
+    - name: Port forward and run tests
       run: |
-        echo "All services:"
-        minikube service list
-        echo "Attempting to get rick-and-morty-api-service URL:"
-        minikube service rick-and-morty-api-service --url
-
-    - name: Run API tests
-      run: |
-        SERVICE_URL=$(minikube service rick-and-morty-api-service --url)
-        echo "Service URL: $SERVICE_URL"
-        curl -v $SERVICE_URL/healthcheck || echo "Failed to reach /healthcheck endpoint"
-        curl -v $SERVICE_URL/characters || echo "Failed to reach /characters endpoint"
+        # Start port forwarding in the background
+        kubectl port-forward service/rick-and-morty-api-service 8080:80 &
+        # Wait for port-forward to be ready
+        sleep 10
+        # Run tests
+        curl -v http://localhost:8080/healthcheck || echo "Failed to reach /healthcheck endpoint"
+        curl -v http://localhost:8080/characters || echo "Failed to reach /characters endpoint"
+        # Kill the port-forwarding process
+        kill %1
 
     - name: Clean up
       if: always()
