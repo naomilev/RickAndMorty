@@ -55,10 +55,6 @@ jobs:
         echo "Application logs:"
         kubectl logs -l app=rick-and-morty-api --tail=100
         
-    - name: Debug - Check DNS and network
-      run: |
-        kubectl run -it --rm --restart=Never --image=busybox network-test -- /bin/sh -c "nslookup rickandmortyapi.com && wget -O- -q https://rickandmortyapi.com/api/character"
-        
     - name: Port forward and run tests
       run: |
         kubectl port-forward service/rick-and-morty-api-service 8080:80 &
