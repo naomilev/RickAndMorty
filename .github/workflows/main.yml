@@ -41,6 +41,14 @@ jobs:
     needs: deploy
     runs-on: ubuntu-latest
     steps:
+    - name: Install minikube
+      run: |
+        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+        sudo install minikube-linux-amd64 /usr/bin/minikube
+    - name: Start minikube
+      run: minikube start --driver=docker --cpus 2 --memory 4096
+    - name: Wait for deployment
+      run: kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
     - name: Run tests
       run: |
         kubectl port-forward service/rick-and-morty-api-service 8080:80 &
