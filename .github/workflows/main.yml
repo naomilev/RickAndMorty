@@ -1,0 +1,67 @@
+```yaml
+name: Rick and Morty API CI/CD
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Build Docker image
+      run: docker build -t rick-and-morty-api .
+    
+    - name: Run Docker container
+      run: docker run -d -p 8080:8080 rick-and-morty-api
+      
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest requests
+        
+    - name: Run tests
+      run: pytest tests.py
+      
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v2
+    
+    - name: Create k8s Kind Cluster
+      uses: helm/kind-action@v1.0.0
+      
+    - name: Deploy to cluster
+      run: |
+        helm install rick-and-morty-api ./helm
+        
+    - name: Get service URL
+      run: |
+        kubectl get services
+        kubectl port-forward service/rick-and-morty-api-service 8080:80 &
+        
+    - name: Run API tests
+      run: |
+        curl http://localhost:8080/healthcheck
+        curl http://localhost:8080/characters
+```
