@@ -109,51 +109,51 @@ To remove the deployed resources:
 ### Deployment Steps
 
 1. Start Minikube:
-    minikube start
+    `minikube start`
 
 2. Apply the Kubernetes manifests:
-    kubectl apply -f kubernetes/Deployment.yaml
-    kubectl apply -f kubernetes/Service.yaml
-    kubectl apply -f kubernetes/Ingress.yaml
+    `kubectl apply -f kubernetes/Deployment.yaml`
+    `kubectl apply -f kubernetes/Service.yaml`
+    `kubectl apply -f kubernetes/Ingress.yaml`
 
 4. Enable the Ingress addon in Minikube:
-    minikube addons enable ingress
+    `minikube addons enable ingress`
 
 5. Get the Minikube IP:
-    minikube ip
+    `minikube ip`
 
 6. Access the API endpoints:
     - Characters: `http://minikube-ip/characters`
     - Health Check: `http://minikube-ip/healthcheck`
 
    For example:
-    curl http://minikube-ip/characters
-    curl http://minikube-ip/healthcheck
+    `curl http://minikube-ip/characters`
+    `curl http://minikube-ip/healthcheck`
    Replace `minikube-ip` with the IP address obtained in step 4.
 
 ### Cleaning Up
 
 To remove the deployed resources:
-      kubectl delete -f kubernetes/Ingress.yaml
-      kubectl delete -f kubernetes/Service.yaml
-      kubectl delete -f kubernetes/Deployment.yaml
+      `kubectl delete -f kubernetes/Ingress.yaml`
+      `kubectl delete -f kubernetes/Service.yaml`
+      `kubectl delete -f kubernetes/Deployment.yaml`
 
 ## Troubleshooting
 
 If you encounter issues accessing the API:
 
 1. Ensure all pods are running:
-    kubectl get pods
+    `kubectl get pods`
 
 2. Check the Ingress controller status:
-    kubectl get pods -n ingress-nginx
+    `kubectl get pods -n ingress-nginx`
 
 4. Verify the Ingress resource:
-    kubectl get ingress
-    kubectl describe ingress rick-and-morty-api-ingress
+    `kubectl get ingress`
+    `kubectl describe ingress rick-and-morty-api-ingress`
 
 5. Check the logs of the API pods:
-    kubectl logs `<pod-name>`
+    `kubectl logs `<pod-name>``
    Replace `<pod-name>` with the actual name of your API pod.
    
    If problems persist, please check the Minikube and Kubernetes documentation for your specific environment.
