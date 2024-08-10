@@ -14,7 +14,7 @@ jobs:
     - name: Build Docker image
       run: docker build -t rick-and-morty-api .
 
-  deploy:
+  deploy-and-test:
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -34,19 +34,6 @@ jobs:
         eval $(minikube docker-env)
         docker build -t rick-and-morty-api .
         helm install rick-and-morty-api ./helm
-    - name: Wait for deployment
-      run: kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
-
-  test:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-    - name: Install minikube
-      run: |
-        curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
-        sudo install minikube-linux-amd64 /usr/bin/minikube
-    - name: Start minikube
-      run: minikube start --driver=docker --cpus 2 --memory 4096
     - name: Wait for deployment
       run: kubectl wait --for=condition=available --timeout=300s deployment/rick-and-morty-api
     - name: Run tests
